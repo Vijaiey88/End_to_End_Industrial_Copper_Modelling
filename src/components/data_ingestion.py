@@ -19,17 +19,13 @@ class DataIngestion:
     def initiate_data_ingestion(self):
         logging.info("Entered the data ingestion method.")
         try:
-            # Read your dataset - Adjust the path accordingly
             df = pd.read_csv('notebook/data/Copper_Set.csv')
 
-            # Create the "artifacts" directory if it doesn't exist
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path), exist_ok=True)
 
-            # Save the raw dataset
             df.to_csv(self.ingestion_config.raw_data_path, index=False, header=True)
             logging.info("Raw data saved.")
 
-            # Train-test split
             train_set, test_set = train_test_split(df, test_size=0.2, random_state=42)
             train_set.to_csv(self.ingestion_config.train_data_path, index=False, header=True)
             test_set.to_csv(self.ingestion_config.test_data_path, index=False, header=True)
