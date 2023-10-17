@@ -5,7 +5,6 @@ from catboost import CatBoostRegressor
 from sklearn.ensemble import AdaBoostRegressor,GradientBoostingRegressor,RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
-from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from xgboost import XGBRegressor
 from src.exception import CustomException
@@ -46,8 +45,7 @@ class ModelTrainer:
                     # 'max_features':['sqrt','log2'],
                 },
                 "Random Forest":{
-                    # 'criterion':['squared_error', 'friedman_mse', 'absolute_error', 'poisson'],
-                 
+                    # 'criterion':['squared_error', 'friedman_mse', 'absolute_error', 'poisson'],                 
                     # 'max_features':['sqrt','log2',None],
                     'n_estimators': [8,16,32,64,128,256]
                 },
@@ -102,11 +100,7 @@ class ModelTrainer:
             predicted=best_model.predict(X_test)
 
             r2_square = r2_score(y_test, predicted)
-            return r2_square
-            
-
-
-
-            
+            return r2_square                        
         except Exception as e:
             raise CustomException(e,sys)
+        
