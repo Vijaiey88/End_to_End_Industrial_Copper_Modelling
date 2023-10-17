@@ -51,7 +51,7 @@ class DataTransformation:
         except Exception as e:
             raise CustomException(e, sys)
     
-    def initiate_data_transformer(self, train_path, test_path):
+    def initiate_data_transformation(self, train_path, test_path):
         try:
             train_df = pd.read_csv(train_path)
             test_df = pd.read_csv(test_path)
@@ -60,8 +60,8 @@ class DataTransformation:
             logging.info('Obtaining preprocessing object')
             preprocessing_obj=self.get_data_transformer_object()
 
-            target_column_name="selling_price"
-            numerical_columns = ["quantity tons", "thickness", "width"]
+            target_column_name="selling_price_transformed"
+            numerical_columns = ["quantity_tons_transformed", "tthickness_transformed", "width"]
 
             input_feature_train_df=train_df.drop(columns=[target_column_name],axis=1)
             target_feature_train_df=train_df[target_column_name]
