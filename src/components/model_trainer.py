@@ -32,18 +32,19 @@ class ModelTrainer:
             }
             params = {
                 "Decision Tree": {
-                    'criterion': ['squared_error', 'friedman_mse', 'absolute_error', 'poisson'],
+                    'criterion': ['mse', 'friedman_mse', 'mae'],
                 },
                 "Bagging Regressor": {}  # You can add BaggingRegressor hyperparameters here if needed
             }
             model_report = evaluate_models(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test, models=models, param=params)
-            
+
             best_model_score = max(sorted(model_report.values()))
             best_model_name = list(model_report.keys())[list(model_report.values()).index(best_model_score)]
             best_model = models[best_model_name]
 
             if best_model_score < 0.6:
-                raise CustomException("No best model found")
+                raise CustomException("Best model's performance is below the threshold.")
+
             logging.info(f"Best found model on both training and testing dataset")
 
             save_object(
@@ -55,17 +56,14 @@ class ModelTrainer:
             r2_square = r2_score(y_test, predicted)
 
             # Calculate performance metrics for Bagging Regressor
-            if best_model_name == "Bagging Regressor":
-                mse_best_BaggingRegressor = mean_squared_error(y_test, predicted)
-                mae_best_BaggingRegressor = mean_absolute_error(y_test, predicted)
-                rmse_best_BaggingRegressor = np.sqrt(mse_best_BaggingRegressor)
+            performance_metrics = {
+                "R2 Score": r2_square,
+                "Mean Squared Error": mean_squared_error(y_test, predicted),
+                "Mean Absolute Error": mean_absolute_error(y_test, predicted),
+                "Root Mean Squared Error": np.sqrt(mean_squared_error(y_test, predicted))
+            }
 
-                print(f"R2 Score: {r2_square}")
-                print(f"Mean Squared Error: {mse_best_BaggingRegressor}")
-                print(f"Mean Absolute Error: {mae_best_BaggingRegressor}")
-                print(f"Root Mean Squared Error: {rmse_best_BaggingRegressor}")
-
-            return r2_square
+            return performance_metrics
 
         except Exception as e:
             raise CustomException(e, sys)
