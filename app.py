@@ -1,77 +1,36 @@
-from flask import Flask, request, render_template
+import json
+import pickle
+from flask import Flask,request,app,jsonify,render_template
+import numpy as np
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
-application = Flask(__name__)
-
-app = application
-
-# Route for the home page
+app=Flask(__name__)
+## Load the model
+regmodel=pickle.load(open('regmodel.pkl','rb'))
+scalar=pickle.load(open('scaling.pkl','rb'))
 @app.route('/')
-def index():
-    return render_template('index.html')
+def home():
+    return render_template('home.html')
 
-@app.route('/predictdata', methods=['GET', 'POST'])
-def predict_datapoint():
-    if request.method == 'GET':
-        return render_template('home.html')
-    else:
-        # Update the code to retrieve the input features from the form
-        data = CustomData(
-            gender=request.form.get('gender'),
-            race_ethnicity=request.form.get('ethnicity'),
-            parental_level_of_education=request.form.get('parental_level_of_education'),
-            lunch=request.form.get('lunch'),
-            test_preparation_course=request.form.get('test_preparation_course'),
-            reading_score=float(request.form.get('reading_score')),
-            writing_score=float(request.form.get('writing_score'))
-        )
-        
-        # Add code to retrieve the additional input features for 'selling_price'
-        item_date = request.form.get('item_date')
-        quantity_tons = float(request.form.get('quantity_tons'))
-        customer = request.form.get('customer')
-        country = request.form.get('country')
-        status = request.form.get('status')
-        item_type = request.form.get('item_type')
-        application = request.form.get('application')
-        thickness = float(request.form.get('thickness'))
-        width = float(request.form.get('width'))
-        material_ref = request.form.get('material_ref')
-        product_ref = request.form.get('product_ref')
-        delivery_date = request.form.get('delivery_date')
+@app.route('/predict_api',methods=['POST'])
+def predict_api():
+    data=request.json['data']
+    print(data)
+    print(np.array(list(data.values())).reshape(1,-1))
+    new_data=scalar.transform(np.array(list(data.values())).reshape(1,-1))
+    output=regmodel.predict(new_data)
+    print(output[0])
+    return jsonify(output[0])
 
-        # Create a dictionary with the input features
-        selling_price_data = {
-            'item_date': item_date,
-            'quantity_tons': quantity_tons,
-            'customer': customer,
-            'country': country,
-            'status': status,
-            'item_type': item_type,
-            'application': application,
-            'thickness': thickness,
-            'width': width,
-            'material_ref': material_ref,
-            'product_ref': product_ref,
-            'delivery_date': delivery_date,
-        }
-        
-        # Combine the input features for 'selling_price' with the existing data
-        data.update_data(selling_price_data)
-        
-        pred_df = data.get_data_as_data_frame()
+@app.route('/predict',methods=['POST'])
+def predict():
+    data=[float(x) for x in request.form.values()]
+    final_input=scalar.transform(np.array(data).reshape(1,-1))
+    print(final_input)
+    output=regmodel.predict(final_input)[0]
+    return render_template("home.html",prediction_text="The House price prediction is {}".format(output))
 
-        print(pred_df)
-        print("Before Prediction")
 
-        predict_pipeline = PredictPipeline()
-        print("Mid Prediction")
-        results = predict_pipeline.predict(pred_df)
-        print("after Prediction")
 
-        return render_template('home.html', results=results[0])
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0")
+if __name__=="__main__":
+    app.run(debug=True)
