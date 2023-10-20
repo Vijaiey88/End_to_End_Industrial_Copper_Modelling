@@ -1,6 +1,8 @@
-Flask
+flask
 sklearn
 pandas
 numpy
 matplotlib
 gunicorn
+bz2file
+pickle
