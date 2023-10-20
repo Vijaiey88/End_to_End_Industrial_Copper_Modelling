@@ -1,41 +1,43 @@
-import json
-import pickle
-import bz2file as bz2
-from flask import Flask,request,app,jsonify,render_template
 import numpy as np
+import pickle
 import pandas as pd
+import streamlit as st 
 
-app=Flask(__name__)
-## Load the model
 def decompress_pickle(file):
     data = bz2.BZ2File(file, 'rb')
     data = pickle.load(data)
     return data
-regmodel = decompress_pickle('copper_reg_model.pbz2')
+reg_model = decompress_pickle('copper_reg_model.pbz2')
 
-@app.route('/')
-def home():
-    return render_template('home.html')
+def welcome():
+    return "Welcome All"
 
-@app.route('/predict_api',methods=['POST'])
-def predict_api():
-    data=request.json['data']
-    print(data)
-    print(np.array(list(data.values())).reshape(1,-1))
-    new_data=np.array(list(data.values())).reshape(1,-1)
-    output=regmodel.predict(new_data)
-    print(output[0])
-    return jsonify(output[0])
-
-@app.route('/predict',methods=['POST'])
-def predict():
-    data=[float(x) for x in request.form.values()]
-    final_input=np.array(data).reshape(1,-1)
-    print(final_input)
-    output=regmodel.predict(final_input)[0]
-    return render_template("home.html",prediction_text="The Copper selling price is {}".format(output**2))
+def predict_note_authentication(variance,skewness,curtosis,entropy):
+    prediction=reg_model.predict([[variance,skewness,curtosis,entropy]])
+    print(prediction)
+    return prediction
 
 
+def main():
+    st.title("Bank Authenticator")
+    html_temp = """
+    <div style="background-color:tomato;padding:10px">
+    <h2 style="color:white;text-align:center;">Streamlit Bank Authenticator ML App </h2>
+    </div>
+    """
+    st.markdown(html_temp,unsafe_allow_html=True)
+    variance = st.text_input("Variance","Type Here")
+    skewness = st.text_input("skewness","Type Here")
+    curtosis = st.text_input("curtosis","Type Here")
+    entropy = st.text_input("entropy","Type Here")
+    result=""
+    if st.button("Predict"):
+        result=predict_note_authentication(variance,skewness,curtosis,entropy)
+    st.success('The output is {}'.format(result))
+    if st.button("About"):
+        st.text("Lets LEarn")
+        st.text("Built with Streamlit")
 
-if __name__=="__main__":
-    app.run(debug=True)
+if __name__=='__main__':
+    main()
+    
