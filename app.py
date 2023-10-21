@@ -12,7 +12,6 @@ def predict_selling_price(fns_input):
 
 def main():
     result = None
-    # Define the possible values for the dropdown menus
     status = {'Won': 116012, 'Lost': 34438, 'Not lost for AM': 19573, 'Revised': 4276, 'To be approved': 4170, 
               'Draft': 3140, 'Offered': 53, 'Offerable': 10, 'Wonderful': 1}
     item_type = {'W': 105615, 'S': 69236, 'PL': 5660, 'Others': 610, 'WI': 524, 'IPL': 27, 'SLAWR': 1}
