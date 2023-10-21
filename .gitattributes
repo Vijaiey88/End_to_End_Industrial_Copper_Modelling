@@ -1,1 +1,2 @@
 *.pbz2 filter=lfs diff=lfs merge=lfs -text
+copper_reg_model filter=lfs diff=lfs merge=lfs -text
