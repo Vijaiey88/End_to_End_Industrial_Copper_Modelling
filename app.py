@@ -83,7 +83,7 @@ def main():
         status = int(status_dict[selected_status])
         item_type = int(item_type_dict[selected_item_type])
         application = float(selected_application)
-        thickness = float(np.log1p(selected_thickness))
+        thickness = np.log1p(float((selected_thickness)))
         width = float(selected_width)
         product_ref = int(selected_product_ref)
         item_delivery_year = int(selected_item_year)
