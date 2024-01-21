@@ -12,7 +12,7 @@ Python // Pandas // Numpy // Seaborn // Matplotlib // Scikit-learn // Streamlit 
 Clone the project
 
 ```bash
-https://github.com/Vijaiey88/End_to_End_Industrial_Copper_Modelling
+git clone https://github.com/Vijaiey88/End_to_End_Industrial_Copper_Modelling
 ```
 
 Go to the project directory
